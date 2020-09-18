@@ -1,5 +1,5 @@
 ---
-title: "Home"
+title: "P-hacking COVID-19"
 site: workflowr::wflow_site
 output:
   workflowr::wflow_html:
@@ -8,4 +8,51 @@ editor_options:
   chunk_output_type: console
 ---
 
-Welcome to my research website.
+Here is our code of COVID-19 challanges.
+
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Read the data
+
+
+```{r read data and exclude the unreasonable data}
+library(utils)
+data <- read.csv("https://opendata.ecdc.europa.eu/covid19/casedistribution/csv", na.strings = "", fileEncoding = "UTF-8-BOM")
+data <- data[data$cases>=0,]
+head(data)
+```
+
+## Add another colum called number of character in a country name 
+
+(such as USA have 3 characters, Chile have 5 characters and so on) 
+
+```{r pressure, echo=FALSE}
+data$number <- nchar(data$countriesAndTerritories)
+```
+
+Then we did the linear regression, since the bias of confirmed cases are too big. Here we used log(cases+1) to made the graph clearer.
+```{r}
+model <- glm(log(cases+1)~number,data= data)
+summary(model)
+```
+
+```{r plot the conclusion}
+library(ggrepel)
+library(dplyr)
+p1 <- data %>%
+  ggplot()+
+  aes(x=number,y=log(cases+1))+
+    geom_point()+
+    geom_abline(color='red',intercept=coef(model)[1],slope=coef(model)[2])+
+  labs(x='Number of the characters in the country')
+
+p1
+```
+
+## Conclusion
+Supersingly, we found out that the length of the countries' name do have an significant effect on the daily case of COVID-19. The shorter the length of the countries' names, the higher COVID-19 cases they have. This could be explained by the fact that places with fewer characters are more well-known. People tends to travel to those more often thus increased the amount of the COVID-19 cases. To be honest, the sample size of the data are quite large so every variables could be possibly high-correlated to the confirmed case. We should then explored more about the mechanism behind the length of the countries' name to proof whether our finding is true.
