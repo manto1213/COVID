@@ -1,7 +1,7 @@
-name: "COVID"
+name: COVID
 output_dir: ../docs
 navbar:
-  title: "COVID"
+  title: COVID
   left:
   - text: Home
     href: index.html
@@ -9,6 +9,10 @@ navbar:
     href: about.html
   - text: License
     href: license.html
+  right:
+  - icon: fa-github
+    text: Source code
+    href: https://github.com/manto1213/COVID
 output:
   workflowr::wflow_html:
     toc: yes
